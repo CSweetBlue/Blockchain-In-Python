@@ -1,6 +1,8 @@
 import hashlib
 import json
+
 from time import time
+from uuid import uuid4
 
 class Blockchain(object):
     def __init__(self):
@@ -76,3 +78,30 @@ class Blockchain(object):
             return - (dict) - The block.
         """
         return self.chain[-1]
+
+    def proof_of_work(self, last_proof):
+        """
+        Proof of work for this blockchain.
+
+        Algo:
+            - Find number x such that when hashed with previous proof,
+              the hash leads with "1234".
+
+        Items of interest:
+            last_proof - (int)
+            return     - (int)
+        """
+
+        proof = 0
+        valid_proof = False
+
+        while valid_proof is False:
+            guess = f'{last_proof}{proof}'.encode()
+            guess_hash = hashlib.sha256(guess).hexdigest()
+            valid_proof = guess_hash[:4] == "1234"
+
+            # Prevents increase in proof value on final loop.
+            if valid_proof is False:
+                proof += 1
+
+        return proof
